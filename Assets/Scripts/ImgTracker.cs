@@ -5,14 +5,29 @@ using UnityEngine.XR.ARFoundation;
 
 public class ImgTracker : MonoBehaviour
 {
-    [SerializeField]
+    /*[SerializeField]
     ARTrackedImageManager imageManager;
 
     [SerializeField]
-    GameObject prefab;
+    GameObject[] prefab;
 
-    /*    [SerializeField]
-        XRReferenceImageLibrary lib;*/
+
+    Dictionary<string, GameObject> objsDic = new Dictionary<string, GameObject>();
+
+    private void Awake() {
+
+        GameObject n1 = Instantiate(prefab[0]);
+        GameObject n2 = Instantiate(prefab[1]);
+
+        n1.GetComponent<OTest>().SetObj(n2);
+
+        n1.SetActive(false);
+        n2.SetActive(false);
+
+        objsDic.Add("1", n1);
+        objsDic.Add("2", n2);
+
+    }
 
     private void OnEnable() {
 
@@ -30,19 +45,13 @@ public class ImgTracker : MonoBehaviour
 
         foreach (ARTrackedImage _img in _args.added) {
 
-            Debug.LogWarning("들어옴");
 
             GameObject obj = null;
 
-            //todo : so로 묶어버리기.
-            switch (_img.referenceImage.name) {
+            if (objsDic.ContainsKey(_img.referenceImage.name)) {
 
-                case "ToyTank":
-                    obj = Instantiate(prefab);
-                    break;
-
-                default:
-                    return;
+                obj = objsDic[_img.referenceImage.name];
+                obj.SetActive(true);
 
             }
 
@@ -50,22 +59,26 @@ public class ImgTracker : MonoBehaviour
             obj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             obj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
 
+            //}
+
+
+
         }
 
         foreach (ARTrackedImage _img in _args.updated) {
 
-            Debug.Log("업데이트" + _img.trackingState);
-            _img.transform.GetChild(0).transform.localPosition = Vector3.zero;
+                _img.transform.GetChild(0).transform.localPosition = Vector3.zero;
 
         }
 
-        /*        foreach (ARTrackedImage _img in _args.removed) {
+        *//*        foreach (ARTrackedImage _img in _args.removed) {
 
                     Debug.Log("사라짐");
                     Destroy(_img.transform.GetChild(0).gameObject);
 
-                }*/
+                }*//*
 
 
-    }
+    }*/
+
 }
