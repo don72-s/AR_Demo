@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -9,6 +10,7 @@ public class ModelPosFitter : MonoBehaviour
     List<Transform> posList = new List<Transform>();
 
     Vector3 pos;
+    Quaternion rot;
 
     private void Update() {
 
@@ -24,6 +26,19 @@ public class ModelPosFitter : MonoBehaviour
         }
 
         transform.position = pos / posList.Count;
+
+
+
+        rot = posList[0].rotation;
+
+        for (int i = 1; i < posList.Count; i++) {
+
+            rot = Quaternion.Slerp(rot, posList[i].rotation, 1f / (i + 1f));
+
+        }
+
+        transform.rotation = rot;
+        transform.Rotate(Vector3.up * 90);
 
     }
 
