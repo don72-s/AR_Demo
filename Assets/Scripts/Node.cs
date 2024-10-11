@@ -15,8 +15,12 @@ public class Node : MonoBehaviour {
     private void Awake() {
 
         nodes = new List<Node>();
-        myId = 1 << (myId - 1);
-        myGroupId = myId;
+
+        //todo : 디버그용이니까 화면에 5개 지울때 제거 + 위에 [sf],[rg]도 제거
+        if (myId != 0) {
+            myId = 1 << (myId - 1);
+            myGroupId = myId;
+        }
 
     }
 
@@ -24,20 +28,29 @@ public class Node : MonoBehaviour {
 
         graphManager = GraphManager.GetInstance();
 
-        if(myId != 0)
-            graphManager.GetModel(myId).AddTransform(transform);
+        if (myId != 0) {
 
-    }
-
-    public void SetIdx(int _idx) {
-
-        if (myId == 0) {
-
-            myId = 1 << (myId - 1);
+            ModelPosFitter tmp = graphManager.GetModel(myId);
+            tmp.gameObject.SetActive(true);
+            tmp.transform.localScale = Vector3.one;
+            tmp.AddTransform(transform);
 
         }
 
     }
+
+    public void SetIdx(DataType _type) {
+
+
+        if (myId == 0) {
+
+            myId = 1 << ((int)_type - 1);
+            myGroupId = myId;
+
+        }
+
+    }
+
 
     public void ConnectNode(Node _node) {
 
@@ -58,6 +71,62 @@ public class Node : MonoBehaviour {
 
     }
 
+    private void OnEnable() {
+
+        if (myId != 0) {
+
+            ModelPosFitter tmp = graphManager.GetModel(myId);
+            tmp.gameObject.SetActive(true);
+            tmp.transform.localScale = Vector3.one;
+            tmp.AddTransform(transform);
+
+        }
+
+    }
+
+    private void OnDisable() {
+
+        foreach (Node _node in nodes) {
+
+            _node.DisconnectNode(this);
+
+        }
+
+
+        //엣지케이스, 독립적인 상태였다면 모델 비활성화.
+        myGroupId = myId;
+        ModelPosFitter tmp = graphManager.GetModel(myGroupId);
+
+        if (tmp.gameObject.activeSelf) {
+
+            tmp.RemoveAllTransforms();
+            tmp.gameObject.SetActive(false);
+
+        }
+
+
+
+        int newGroupId;
+
+        foreach (Node _node in nodes) {
+
+            newGroupId = _node.GetGroupId();
+
+            if (_node.myGroupId != newGroupId) {
+
+                tmp = graphManager.GetModel(newGroupId);
+
+                tmp.gameObject.SetActive(true);
+                _node.SetGroupId_N_SetNewModelTransforms(newGroupId, tmp);
+
+            }          
+            
+        }
+
+        nodes.Clear();        
+
+    }
+
     private void OnTriggerEnter(Collider other) {
 
         if (other.gameObject.layer == LayerMask.NameToLayer("NodeObj")) {
@@ -74,6 +143,7 @@ public class Node : MonoBehaviour {
                 ModelPosFitter tmp = graphManager.GetModel(newGroupId);
 
                 tmp.gameObject.SetActive(true);
+                tmp.transform.localScale = Vector3.one;
                 SetGroupId_N_SetNewModelTransforms(newGroupId, tmp);
 
 
@@ -143,7 +213,11 @@ public class Node : MonoBehaviour {
 
     }
 
-    //이 친구로 바꾸거라.
+    /// <summary>
+    /// 현재 속한 그룹들의 그룹아이디와 대응하는 모델 갱신
+    /// </summary>
+    /// <param name="_newGroupId">새로 설정될 그룹아이디</param>
+    /// <param name="_modelInfo">새로운 그룹 아이디에 대응되는 모델</param>
     public void SetGroupId_N_SetNewModelTransforms(int _newGroupId, ModelPosFitter _modelInfo) {
 
         if (!gameObject.activeSelf || _newGroupId == myGroupId)//이미 방문함 or 갱신필요x.

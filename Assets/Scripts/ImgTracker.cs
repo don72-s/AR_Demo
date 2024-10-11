@@ -2,30 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public class ImgTracker : MonoBehaviour
 {
-    /*[SerializeField]
-    ARTrackedImageManager imageManager;
-
     [SerializeField]
-    GameObject[] prefab;
+    ARTrackedImageManager imageManager;
+    [SerializeField]
+    Str2ModelSO imgNameMapperSO;
+    Dictionary<string, DataType> nodeTypeDic = new Dictionary<string, DataType>();
 
+    [Header("base prefab of cards")]
+    [SerializeField]
+    Node nodePrefab;
 
-    Dictionary<string, GameObject> objsDic = new Dictionary<string, GameObject>();
+    Dictionary<DataType, Node> createdNodeDic = new Dictionary<DataType, Node>();
 
-    private void Awake() {
-
-        GameObject n1 = Instantiate(prefab[0]);
-        GameObject n2 = Instantiate(prefab[1]);
-
-        n1.GetComponent<OTest>().SetObj(n2);
-
-        n1.SetActive(false);
-        n2.SetActive(false);
-
-        objsDic.Add("1", n1);
-        objsDic.Add("2", n2);
+    private void Start() {
+        
+        foreach (var imgNameData in imgNameMapperSO.imgNameDatas)
+            nodeTypeDic.Add(imgNameData.imgName, imgNameData.dataType);
 
     }
 
@@ -45,40 +41,62 @@ public class ImgTracker : MonoBehaviour
 
         foreach (ARTrackedImage _img in _args.added) {
 
+            if (nodeTypeDic.ContainsKey(_img.referenceImage.name)) {
 
-            GameObject obj = null;
+                DataType type = nodeTypeDic[_img.referenceImage.name];
+                Node tmpNode;
 
-            if (objsDic.ContainsKey(_img.referenceImage.name)) {
+                if (createdNodeDic.ContainsKey(type)) {//이미 만들어진적이 있음.
 
-                obj = objsDic[_img.referenceImage.name];
-                obj.SetActive(true);
+                    //가져오자
+                    tmpNode = createdNodeDic[type];
+                    tmpNode.gameObject.SetActive(true);
+
+                } else { 
+
+                    tmpNode = Instantiate(nodePrefab);
+                    tmpNode.SetIdx(type);
+
+                    createdNodeDic.Add(type, tmpNode);
+                                                                                 
+                }
+
+                tmpNode.transform.SetParent(_img.transform);
+                tmpNode.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                tmpNode.transform.localScale = new Vector3(0.6f, 0.2f, 0.8f);
 
             }
-
-            obj.transform.SetParent(_img.transform);
-            obj.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            obj.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-
-            //}
-
-
 
         }
 
         foreach (ARTrackedImage _img in _args.updated) {
 
+            Debug.Log(_img.trackingState);
+
+            if (_img.trackingState == TrackingState.Limited) {
+
+                createdNodeDic[nodeTypeDic[_img.referenceImage.name]].gameObject.SetActive(false);
+
+
+            } else if (_img.trackingState == TrackingState.Tracking) {
+
+                createdNodeDic[nodeTypeDic[_img.referenceImage.name]].gameObject.SetActive(true);
                 _img.transform.GetChild(0).transform.localPosition = Vector3.zero;
+
+            }
+
 
         }
 
-        *//*        foreach (ARTrackedImage _img in _args.removed) {
+        foreach (ARTrackedImage _img in _args.removed) {
 
-                    Debug.Log("사라짐");
-                    Destroy(_img.transform.GetChild(0).gameObject);
+            Debug.Log("사라짐");
+            _img.transform.GetChild(0).transform.SetParent(null);
+            _img.transform.GetChild(0).gameObject.SetActive(false);
 
-                }*//*
+        }
 
 
-    }*/
+    }
 
 }
