@@ -11,7 +11,7 @@ Collectable Card Craft 방식의 카드조합 프로그램
 
 <hr>
 
-### [프로젝트 구조 설명]()
+### [프로젝트 구조 설명](https://github.com/don72-s/AR_Demo/blob/main/Docs/description.md)
 
 <hr>
 
