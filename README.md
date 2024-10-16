@@ -11,11 +11,11 @@ Collectable Card Craft 방식의 카드조합 프로그램
 
 <hr>
 
-### [프로젝트 구조 설명](https://github.com/don72-s/AR_Demo/blob/main/Docs/description.md)
+### [프로젝트 기술 문서](https://github.com/don72-s/AR_Demo/blob/main/Docs/description.md)
 
 <hr>
 
-### [전체 시연 영상]()
+### [시연 영상](https://www.youtube.com/watch?v=4dn4l6Rsqak)
 
 <hr>
 <br>
