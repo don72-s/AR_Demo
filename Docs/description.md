@@ -33,7 +33,7 @@
 
 <br>
 
-## 여러 종류의 이미지 트래킹.
+## 여러 종류의 이미지 트래킹
 
 Unity AR Foundation의 기본 제공 컴포넌트인 **AR Tracked Image Manager**는 한가지 종류의 이미지 트래킹만을 제공한다.
 
@@ -59,11 +59,11 @@ void Changed(ARTrackedImagesChangedEventArgs _args) {
 
 <br>
 
-## 이미지 등록.
+## 이미지 등록
 
 <br>
 
-### 이미지와 이름의 등록.
+### 이미지와 이름의 등록
 
 이벤트는 등록되어있는 이미지가 트래킹되었을 때 발생한다고 했다. 따라서 이미지를 등록하는 과정이 필요하다.
 
@@ -72,7 +72,7 @@ void Changed(ARTrackedImagesChangedEventArgs _args) {
    
 ![9](https://github.com/user-attachments/assets/c67c53b2-4968-46ac-9c37-ef3eea28224b)
 
-### 이미지와 이름의 관리.
+### 이미지와 이름의 관리
 
 효율적인 데이터 관리를 위하여 간단한 SO파일을 작성한다.
 
